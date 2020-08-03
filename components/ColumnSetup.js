@@ -4,11 +4,12 @@ import {
   Draggable,
   Droppable
 } from 'react-beautiful-dnd'
-import { 
-  Container, 
-  Row, 
-  Col 
+import {
+  Container,
+  Row,
+  Col,
 } from 'react-bootstrap'
+import ListItem from './ListItem'
 
 const reorder = (list, startIndex, endIndex) => {
   const result = Array.from(list);
@@ -64,14 +65,16 @@ class ColumnSetup extends React.Component {
 
     this.state = {
       availableColumns: this.props.availableColumns,
-      visibleColumns: []
+      visibleColumns: this.props.visibleColumns,
+      showIconAvailableIndex: undefined,
+      showIconVisibleIndex: undefined
     }
   }
 
   id2List = {
     droppable: 'availableColumns',
     droppable2: 'visibleColumns'
-};
+  };
 
   getList = id => this.state[this.id2List[id]];
 
@@ -80,37 +83,37 @@ class ColumnSetup extends React.Component {
 
     // dropped outside the list
     if (!destination) {
-        return;
+      return;
     }
 
     if (source.droppableId === destination.droppableId) {
-        const items = reorder(
-            this.getList(source.droppableId),
-            source.index,
-            destination.index
-        );
+      const items = reorder(
+        this.getList(source.droppableId),
+        source.index,
+        destination.index
+      );
 
-        let state = { items };
+      let state = { items };
 
-        if (source.droppableId === 'droppable2') {
-            state = { visibleColumns: items };
-        }
+      if (source.droppableId === 'droppable2') {
+        state = { visibleColumns: items };
+      }
 
-        this.setState(state);
+      this.setState(state);
     } else {
-        const result = move(
-            this.getList(source.droppableId),
-            this.getList(destination.droppableId),
-            source,
-            destination
-        );
+      const result = move(
+        this.getList(source.droppableId),
+        this.getList(destination.droppableId),
+        source,
+        destination
+      );
 
-        this.setState({
-            availableColumns: result.droppable,
-            visibleColumns: result.droppable2
-        });
+      this.setState({
+        availableColumns: result.droppable,
+        visibleColumns: result.droppable2
+      });
     }
-};
+  };
 
   render = () => {
     return (
@@ -120,77 +123,88 @@ class ColumnSetup extends React.Component {
         </Row>
         <Row className={'header header-subtext'}>
           <p>Drag & drop between columns to configure visible data.</p>
-          <br/>
-          <br/>
-          <br/>
+          <br />
+          <br />
         </Row>
         <DragDropContext onDragEnd={this.onDragEnd}>
           <Row className={'list-container'}>
-            <Col className={'available-list'}>
+            <Col className={'list available-list'}>
               <Droppable droppableId="droppable">
-                  {(provided, snapshot) => (
-                      <div
-                          ref={provided.innerRef}
-                          style={getListStyle(snapshot.isDraggingOver)}
-                      >
-                          {this.state.availableColumns.map((item, index) => (
-                              <Draggable
-                                  key={item.id}
-                                  draggableId={item.id}
-                                  index={index}>
-                                  {(provided, snapshot) => (
-                                      <div
-                                          ref={provided.innerRef}
-                                          {...provided.draggableProps}
-                                          {...provided.dragHandleProps}
-                                          style={getItemStyle(
-                                              snapshot.isDragging,
-                                              provided.draggableProps.style
-                                          )}>
-                                          {item.name}
-                                      </div>
-                                  )}
-                              </Draggable>
-                          ))}
-                          {provided.placeholder}
-                      </div>
-                  )}
+                {(provided, snapshot) => (
+                  <div
+                    ref={provided.innerRef}
+                    style={getListStyle(snapshot.isDraggingOver)}
+                  >
+                    {this.state.availableColumns.map((item, index) => (
+                      <Draggable
+                        key={item.id}
+                        draggableId={item.id}
+                        index={index}>
+                        {(provided, snapshot) => (
+                          <div
+                            onMouseEnter={() => this.setState({ showIconAvailableIndex: index })}
+                            onMouseLeave={() => this.setState({ showIconAvailableIndex: undefined })}
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                            style={getItemStyle(
+                              snapshot.isDragging,
+                              provided.draggableProps.style
+                            )}>
+                            <ListItem
+                              // locked={getLockedStatus(index)}
+                              showListIcon={this.state.showIconAvailableIndex == index}
+                              itemText={item.name}
+                            />
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                )}
               </Droppable>
             </Col>
             <Col className={'list'}>
               <Droppable droppableId="droppable2">
-                  {(provided, snapshot) => (
-                      <div
-                          ref={provided.innerRef}
-                          style={getListStyle(snapshot.isDraggingOver)}
-                      >
-                          {this.state.visibleColumns.map((item, index) => (
-                              <Draggable
-                                  key={item.id}
-                                  draggableId={item.id}
-                                  index={index}>
-                                  {(provided, snapshot) => (
-                                      <div
-                                          ref={provided.innerRef}
-                                          {...provided.draggableProps}
-                                          {...provided.dragHandleProps}
-                                          style={getItemStyle(
-                                              snapshot.isDragging,
-                                              provided.draggableProps.style
-                                          )}>
-                                          {item.name}
-                                      </div>
-                                  )}
-                              </Draggable>
-                          ))}
-                          {provided.placeholder}
-                      </div>
-                    )}
-                </Droppable>
-              </Col>
-            </Row>
-          </DragDropContext>
-          {/* 
+                {(provided, snapshot) => (
+                  <div
+                    ref={provided.innerRef}
+                    style={getListStyle(snapshot.isDraggingOver)}
+                  >
+                    {this.state.visibleColumns.map((item, index) => (
+                      <Draggable
+                        key={item.id}
+                        draggableId={item.id}
+                        index={index}>
+                        {(provided, snapshot) => (
+                          <div
+                            onMouseEnter={() => this.setState({ showIconVisibleIndex: index })}
+                            onMouseLeave={() => this.setState({ showIconVisibleIndex: undefined })}
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                            style={getItemStyle(
+                              snapshot.isDragging,
+                              provided.draggableProps.style
+                            )}>
+                            <ListItem
+                              // locked={getLockedStatus(index)}
+                              showListIcon={this.state.showIconVisibleIndex == index}
+                              itemText={item.name}
+                            />
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </Col>
+          </Row>
+        </DragDropContext>
+        {/* 
               <Col className={'list'}>
                 <ul className={'available-list'}>
                   {this.state.availableColumns.map((col) => <li>{col.name}</li>)}
