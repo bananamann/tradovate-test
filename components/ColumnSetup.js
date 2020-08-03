@@ -66,14 +66,16 @@ class ColumnSetup extends React.Component {
     this.state = {
       availableColumns: this.props.availableColumns,
       visibleColumns: this.props.visibleColumns,
+      displayAvailableColumns: this.props.availableColumns.filter((c) => !this.props.visibleColumns.includes(c.id)).map((c) => c.name),
+      displayVisibleColumns: this.props.visibleColumns.map((id) => this.props.availableColumns.find((c) => c.id === id).name),
       showIconAvailableIndex: undefined,
       showIconVisibleIndex: undefined
     }
   }
 
   id2List = {
-    droppable: 'availableColumns',
-    droppable2: 'visibleColumns'
+    droppable: 'displayAvailableColumns',
+    droppable2: 'displayVisibleColumns'
   };
 
   getList = id => this.state[this.id2List[id]];
@@ -95,8 +97,12 @@ class ColumnSetup extends React.Component {
 
       let state = { items };
 
+      if (source.droppableId === 'droppable') {
+        state = { displayAvailableColumns: items };
+      }
+
       if (source.droppableId === 'droppable2') {
-        state = { visibleColumns: items };
+        state = { displayVisibleColumns: items };
       }
 
       this.setState(state);
@@ -109,8 +115,8 @@ class ColumnSetup extends React.Component {
       );
 
       this.setState({
-        availableColumns: result.droppable,
-        visibleColumns: result.droppable2
+        displayAvailableColumns: result.droppable,
+        displayVisibleColumns: result.droppable2
       });
     }
   };
@@ -135,10 +141,10 @@ class ColumnSetup extends React.Component {
                     ref={provided.innerRef}
                     style={getListStyle(snapshot.isDraggingOver)}
                   >
-                    {this.state.availableColumns.map((item, index) => (
+                    {this.state.displayAvailableColumns.map((item, index) => (
                       <Draggable
-                        key={item.id}
-                        draggableId={item.id}
+                        key={item}
+                        draggableId={item}
                         index={index}>
                         {(provided, snapshot) => (
                           <div
@@ -154,7 +160,7 @@ class ColumnSetup extends React.Component {
                             <ListItem
                               // locked={getLockedStatus(index)}
                               showListIcon={this.state.showIconAvailableIndex == index}
-                              itemText={item.name}
+                              itemText={item}
                             />
                           </div>
                         )}
@@ -165,17 +171,17 @@ class ColumnSetup extends React.Component {
                 )}
               </Droppable>
             </Col>
-            <Col className={'list'}>
+            <Col className={'list visible-list'}>
               <Droppable droppableId="droppable2">
                 {(provided, snapshot) => (
                   <div
                     ref={provided.innerRef}
                     style={getListStyle(snapshot.isDraggingOver)}
                   >
-                    {this.state.visibleColumns.map((item, index) => (
+                    {this.state.displayVisibleColumns.map((item, index) => (
                       <Draggable
-                        key={item.id}
-                        draggableId={item.id}
+                        key={item}
+                        draggableId={item}
                         index={index}>
                         {(provided, snapshot) => (
                           <div
@@ -191,7 +197,7 @@ class ColumnSetup extends React.Component {
                             <ListItem
                               // locked={getLockedStatus(index)}
                               showListIcon={this.state.showIconVisibleIndex == index}
-                              itemText={item.name}
+                              itemText={item}
                             />
                           </div>
                         )}
