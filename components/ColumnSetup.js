@@ -8,8 +8,10 @@ import {
   Container,
   Row,
   Col,
+  Button
 } from 'react-bootstrap'
 import ListItem from './ListItem'
+import * as Icon from 'react-bootstrap-icons';
 
 const reorder = (list, startIndex, endIndex) => {
   const result = Array.from(list);
@@ -119,119 +121,165 @@ class ColumnSetup extends React.Component {
       this.setState({
         displayAvailableColumns: result.droppable,
         displayVisibleColumns: result.droppable2
+      }, () => {
+        this.setState({
+          visibleColumns: this.state.displayVisibleColumns.map((v) => this.state.availableColumns.filter((c) => c.name === v)[0].id)
+        })
       });
     }
   };
 
-  // getLockedStatus = index => {
-  //   if (index > this.state.numFixedColumns - 1) {
-  //     return false;
-  //   } else {
-  //     return true;
-  //   }
-  // }
+  updateFixedColumns = (index = this.state.numFixedColumns) => {
+    if (index < this.state.numFixedColumns) {
+      index -= 1;
+    }
+
+    this.setState({
+      numFixedColumns: index + 1
+    });
+  }
+
+  handleSave = () => {
+    // normally a Fetch API call or something in here to send state data to backend server
+    alert(`Visible Columns (ids): ${this.state.visibleColumns} \n\nFixed Columns: ${this.state.numFixedColumns}`)
+  }
+
+  handleCancel = () => {
+    // normally some code that takes you back where you were
+    alert('Canceling changes. Bye bye!');
+  }
 
   render = () => {
     return (
-      <Container className={'container'}>
-        <Row className={'header header-text-row'}>
-          <h3 className={'header-text'}>Configure Data Fields</h3>
-        </Row>
-        <Row className={'header header-subtext'}>
-          <p>Drag & drop between columns to configure visible data.</p>
-          <br />
-          <br />
-        </Row>
-        <DragDropContext onDragEnd={this.onDragEnd}>
-          <Row className={'list-container'}>
-            <Col className={'list available-list'}>
-              <p className={'column-header'}>Available</p>
-              <Droppable droppableId="droppable">
-                {(provided, snapshot) => (
-                  <div
-                    ref={provided.innerRef}
-                    style={getListStyle(snapshot.isDraggingOver)}
-                  >
-                    {this.state.displayAvailableColumns.map((item, index) => (
-                      <Draggable
-                        key={item}
-                        draggableId={item}
-                        index={index}>
-                        {(provided, snapshot) => (
-                          <div
-                            onMouseEnter={() => this.setState({ showIconAvailableIndex: index })}
-                            onMouseLeave={() => this.setState({ showIconAvailableIndex: undefined })}
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                            style={getItemStyle(
-                              snapshot.isDragging,
-                              provided.draggableProps.style
-                            )}>
-                            <ListItem
-                              index={index}
-                              showListIcon={this.state.showIconAvailableIndex == index}
-                              itemText={item}
-                            />
-                          </div>
-                        )}
-                      </Draggable>
-                    ))}
-                    {provided.placeholder}
-                  </div>
-                )}
-              </Droppable>
-            </Col>
-            <Col className={'list visible-list'}>
-              <p className={'column-header'}>Visible</p>
-              <Droppable droppableId="droppable2">
-                {(provided, snapshot) => (
-                  <div
-                    ref={provided.innerRef}
-                    style={getListStyle(snapshot.isDraggingOver)}
-                  >
-                    {this.state.displayVisibleColumns.map((item, index) => ([
-                      index < this.state.numFixedColumns && 
-                      <ListItem
-                        index={index}
-                        locked={true}
-                        showListIcon={this.state.showIconVisibleIndex == index}
-                        itemText={item}
-                      />,
-                      index > this.state.numFixedColumns -1 &&
-                      <Draggable
-                        key={item}
-                        draggableId={item}
-                        index={index}>
-                        {(provided, snapshot) => (
-                          <div
-                            onMouseEnter={() => this.setState({ showIconVisibleIndex: index })}
-                            onMouseLeave={() => this.setState({ showIconVisibleIndex: undefined })}
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                            style={getItemStyle(
-                              snapshot.isDragging,
-                              provided.draggableProps.style
-                            )}>
-                            <ListItem
-                              // locked={this.getLockedStatus(index)}
-                              index={index}
-                              showListIcon={this.state.showIconVisibleIndex == index}
-                              itemText={item}
-                            />
-                          </div>
-                        )}
-                      </Draggable>
-                    ]))}
-                    {provided.placeholder}
-                  </div>
-                )}
-              </Droppable>
-            </Col>
+      <>
+        <Container className={'main-container'}>
+          <Row className={'header header-text-row'}>
+            <h3 className={'header-text'}>Configure Data Fields</h3>
+            <Icon.X
+              onClick={() => alert("Man you guys even checked the useless close button. I'm impressed. \n\nClosing App!")}
+              style={{ color: '#666', marginLeft: '65%' }}
+              size={30}
+            />
           </Row>
-        </DragDropContext>
-      </Container>
+          <Row className={'header header-subtext'}>
+            <p>Drag & drop between columns to configure visible data.</p>
+            <br />
+            <br />
+          </Row>
+          <DragDropContext className={'content-container'} onDragEnd={this.onDragEnd}>
+            <Row>
+              <Col>
+                <p className={'column-header'}>Available</p>
+              </Col>
+              <Col>
+                <p className={'column-header'}>Visible</p>
+              </Col>
+            </Row>
+            <Row className={'list-container'}>
+              <Col className={'list available-list'}>
+                <Droppable droppableId="droppable">
+                  {(provided, snapshot) => (
+                    <div
+                      ref={provided.innerRef}
+                      style={getListStyle(snapshot.isDraggingOver)}
+                    >
+                      {this.state.displayAvailableColumns.map((item, index) => (
+                        <Draggable
+                          key={item}
+                          draggableId={item}
+                          index={index}>
+                          {(provided, snapshot) => (
+                            <div
+                              onMouseEnter={() => this.setState({ showIconAvailableIndex: index })}
+                              onMouseLeave={() => this.setState({ showIconAvailableIndex: undefined })}
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                              style={getItemStyle(
+                                snapshot.isDragging,
+                                provided.draggableProps.style
+                              )}>
+                              <ListItem
+                                index={index}
+                                showListIcon={this.state.showIconAvailableIndex == index}
+                                itemText={item}
+                              />
+                            </div>
+                          )}
+                        </Draggable>
+                      ))}
+                      {provided.placeholder}
+                    </div>
+                  )}
+                </Droppable>
+              </Col>
+              <Col className={'list visible-list'}>
+                <Droppable droppableId="droppable2">
+                  {(provided, snapshot) => (
+                    <div
+                      ref={provided.innerRef}
+                      style={getListStyle(snapshot.isDraggingOver)}
+                    >
+                      {this.state.displayVisibleColumns.map((item, index) => ([
+                        index < this.state.numFixedColumns && 
+                        <ListItem
+                          updateFixedColumnsCB={() => this.updateFixedColumns(index)}
+                          index={index}
+                          locked={true}
+                          showListIcon={this.state.showIconVisibleIndex == index}
+                          itemText={item}
+                        />,
+                        index > this.state.numFixedColumns - 1 &&
+                        <Draggable
+                          key={item}
+                          draggableId={item}
+                          index={index}>
+                          {(provided, snapshot) => (
+                            <div
+                              onMouseEnter={() => this.setState({ showIconVisibleIndex: index })}
+                              onMouseLeave={() => this.setState({ showIconVisibleIndex: undefined })}
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                              style={getItemStyle(
+                                snapshot.isDragging,
+                                provided.draggableProps.style
+                              )}>
+                              <ListItem
+                                updateFixedColumnsCB={() => this.updateFixedColumns(index)}
+                                index={index}
+                                showListIcon={this.state.showIconVisibleIndex == index}
+                                itemText={item}
+                              />
+                            </div>
+                          )}
+                        </Draggable>
+                      ]))}
+                      {provided.placeholder}
+                    </div>
+                  )}
+                </Droppable>
+              </Col>
+            </Row>
+          </DragDropContext>
+        </Container>
+        <Container className={'action-container'}>
+          <Row>
+            <Button 
+              className={'btn-save'}
+              onClick={this.handleSave}
+            >
+              Save
+            </Button>
+            <Button 
+              className={'btn-cancel'}
+              onClick={this.handleCancel}
+            >
+              Cancel
+            </Button>
+          </Row>
+        </Container>
+      </>
     )
   }
 }

@@ -20,7 +20,7 @@ p {
 
 // class selectors
 
-.container {
+.main-container {
     font-family: Helvetica;
     background-color: #0f1117;
     color: white;
@@ -28,7 +28,40 @@ p {
     height: 550px;
     margin: 0px auto;
     padding-top: 20px;
-    overflow: scroll;
+    overflow: hidden;
+}
+
+.list-container {
+    min-height: 460px;
+}
+
+.action-container {
+    font-family: Helvetica;
+    background-color: #0f1117;
+    color: white;
+    width: 600px;
+    height: 100;
+    margin: 0px auto;
+    padding: 20px;
+    padding-top: 40px;
+}
+
+.btn-save {
+    background-color: #4894c7;
+    color: #d5dce5;
+    margin-left: 16px;
+    padding-left: 25px;
+    padding-right: 25px;
+    border: none;
+}
+
+.btn-cancel {
+    background-color: #7e838c;
+    color: #d5dce5;
+    margin-left: 16px;
+    padding-left: 25px;
+    padding-right: 25px;
+    border: none;
 }
 
 .header {
@@ -47,14 +80,6 @@ p {
     margin-top: -5px;
 }
 
-.close-btn-container {
-    top: 15px;
-    right: 15px;
-    border: 1px solid white;
-    height: 20px;
-    width: 20px;
-}
-
 .column-header {
     padding-left: 8px;
     font-size: 12px;
@@ -63,10 +88,6 @@ p {
 
 .available-list {
     border-right: 1px dashed #666;
-}
-
-.list > div > div {
-    margin-bottom: 0px;
 }
 
 .list > div > div:hover {
