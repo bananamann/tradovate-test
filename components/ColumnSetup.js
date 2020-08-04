@@ -44,7 +44,8 @@ const getItemStyle = (isDragging, draggableStyle) => ({
   padding: grid * 2,
   paddingTop: grid,
   paddingBottom: grid,
-  margin: `0 0 ${grid}px 0`,
+  paddingLeft: 6,
+  margin: 0,
 
   // change background colour if dragging
   background: isDragging ? '#666' : '',
@@ -69,7 +70,6 @@ class ColumnSetup extends React.Component {
       numFixedColumns: this.props.fixedColumns,
       displayAvailableColumns: this.props.availableColumns.filter((c) => !this.props.visibleColumns.includes(c.id)).map((c) => c.name),
       displayVisibleColumns: this.props.visibleColumns.map((id) => this.props.availableColumns.find((c) => c.id === id).name),
-      displayFixedColumns: this.props.visibleColumns.slice(0, this.props.fixedColumns),
       showIconAvailableIndex: undefined,
       showIconVisibleIndex: undefined
     }
@@ -145,6 +145,7 @@ class ColumnSetup extends React.Component {
         <DragDropContext onDragEnd={this.onDragEnd}>
           <Row className={'list-container'}>
             <Col className={'list available-list'}>
+              <p className={'column-header'}>Available</p>
               <Droppable droppableId="droppable">
                 {(provided, snapshot) => (
                   <div
@@ -168,6 +169,7 @@ class ColumnSetup extends React.Component {
                               provided.draggableProps.style
                             )}>
                             <ListItem
+                              index={index}
                               showListIcon={this.state.showIconAvailableIndex == index}
                               itemText={item}
                             />
@@ -181,6 +183,7 @@ class ColumnSetup extends React.Component {
               </Droppable>
             </Col>
             <Col className={'list visible-list'}>
+              <p className={'column-header'}>Visible</p>
               <Droppable droppableId="droppable2">
                 {(provided, snapshot) => (
                   <div
@@ -190,6 +193,7 @@ class ColumnSetup extends React.Component {
                     {this.state.displayVisibleColumns.map((item, index) => ([
                       index < this.state.numFixedColumns && 
                       <ListItem
+                        index={index}
                         locked={true}
                         showListIcon={this.state.showIconVisibleIndex == index}
                         itemText={item}
@@ -212,6 +216,7 @@ class ColumnSetup extends React.Component {
                             )}>
                             <ListItem
                               // locked={this.getLockedStatus(index)}
+                              index={index}
                               showListIcon={this.state.showIconVisibleIndex == index}
                               itemText={item}
                             />

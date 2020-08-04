@@ -23,7 +23,7 @@ class ListItem extends React.Component {
               />
             }
             { this.props.locked &&
-              <Icon.Lock />
+              <Icon.LockFill />
             }
             {this.props.itemText}
         </div>
