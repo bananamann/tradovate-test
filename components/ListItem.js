@@ -1,23 +1,30 @@
 import React from 'react'
 import ColumnSetup from './ColumnSetup'
-import { List } from 'react-bootstrap-icons'
+import * as Icon from 'react-bootstrap-icons';
 
 class ListItem extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-
+      locked: this.props.locked ? true : false
     }
   }
   
 
   render() {
     return (
-        <div>
-            <List 
-                visibility={this.props.showListIcon ? 'visible' : 'hidden'}
-            />
+        <div
+          className={this.props.locked ? 'locked-item' : ''}
+        >
+            { !this.props.locked &&
+              <Icon.List
+                  visibility={this.props.showListIcon ? 'visible' : 'hidden'}
+              />
+            }
+            { this.props.locked &&
+              <Icon.Lock />
+            }
             {this.props.itemText}
         </div>
     )
