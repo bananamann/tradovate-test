@@ -16,7 +16,12 @@ Clone the project and extract to your desired folder (tradovate-test)
 
 To run, use the following commands:
 
-```cd tradovate-test```
+```bash
+cd tradovate-test
+```
+```bash
+npm start
+```
 
 ### Dependencies
 
